@@ -140,10 +140,17 @@ tw.init = function (attrs) {
         tw.mouseLastPos[1] = e.clientY;
     });
 
+    let reInitDelay = null;
+
     $('#cnvs').mousewheel(function (event, delta, deltaX, deltaY) {
         // Change camera zoom on mosewheel
         tw.cameraZoom += deltaY * (tw.cameraZoom / 10);
-        tw.zoomed = true;
+        if (reInitDelay) {
+            clearTimeout(reInitDelay);
+        }
+        reInitDelay = setTimeout(() => {
+            tw.zoomed = true;
+        }, 450)
     });
 
     tw.zoomed = false;
@@ -457,7 +464,7 @@ tw.Map = function (mapData) {
 
         if (imgInfo.external) {
             // load external texture
-            var url = imgName + '.png';
+            var url = 'assets/' + imgName + '.png';
             var tex = tw.loadTexture({
                 extern: true,
                 imgUrl: url,
@@ -851,6 +858,7 @@ tw.loadTexture = function (attrs) {
     if (attrs.extern) {
         // load texture from image url
         tex.image = new Image();
+        tex.image.crossOrigin = "anonymous";
         tex.image.src = attrs.imgUrl;
 
         tex.image.onload = function (e) {
